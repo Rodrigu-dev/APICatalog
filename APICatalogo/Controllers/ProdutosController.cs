@@ -46,12 +46,6 @@ namespace APICatalogo.Controllers
         [HttpPut("{id}")]
         public ActionResult Put(int id,[FromBody] Produto produto)
         {
-            /// ESSA VERIFICAÇÃO NÃO PRECISA MAIS SER FEITA POR SER AUTOMATICA PELO FRAMEWORK
-            //if (!ModelState.IsValid)
-            // {
-            //     return BadRequest(ModelState);
-            // }
-            
             if (id != produto.ProdutoId) // Verificando se o ID que está sendo passado é do produto a alterar.
             {
                 return BadRequest();
