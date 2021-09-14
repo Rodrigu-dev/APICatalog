@@ -23,6 +23,7 @@ namespace APICatalogo.Models
         public float Estoque { get; set; }
         public DateTime DataCadastro { get; set; }
 
+        //Propriedades de Navegação
         public Categoria Categoria { get; set; }
         public int CategoriaId { get; set; }
 
