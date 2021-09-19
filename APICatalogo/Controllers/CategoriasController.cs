@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
@@ -25,20 +26,20 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("produtos")]
-        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasProdutos()
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriasProdutos()
         {
-            var categorias = _uof.CategoriaRepository.GetCategoriaProdutos().ToList();
+            var categorias = await _uof.CategoriaRepository.GetCategoriaProdutos();
             var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
             return categoriasDto;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<CategoriaDTO>> 
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> 
             Get([FromQuery] CategoriasParameters categoriasParameters)
         {
             try
             {
-                var categoria = _uof.CategoriaRepository.GetCategorias(categoriasParameters);
+                var categoria = await _uof.CategoriaRepository.GetCategorias(categoriasParameters);
 
                 var metadata = new
                 {
@@ -64,11 +65,11 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("{id}", Name = "ObterCategoria")]
-        public ActionResult<CategoriaDTO> Get(int id)
+        public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
             try
             {
-                var categoria = _uof.CategoriaRepository.GetById(p => p.CategoriaId == id);
+                var categoria = await _uof.CategoriaRepository.GetById(p => p.CategoriaId == id);
                 if (categoria == null)
                 {
                     return NotFound($"A categoria com id={id} não foi encontrada");
@@ -86,14 +87,14 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] CategoriaDTO categoriaDto)
+        public async Task<ActionResult> Post([FromBody] CategoriaDTO categoriaDto)
         {
             try
             {
                 var categoria = _mapper.Map<Categoria>(categoriaDto);
                 
                 _uof.CategoriaRepository.Add(categoria); // Adiciona na Memória 
-                _uof.Commit(); // Inclui os dados no Banco de dados
+                await _uof.Commit(); // Inclui os dados no Banco de dados
 
                 var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
 
@@ -108,7 +109,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] CategoriaDTO categoriaDto)
+        public async Task<ActionResult> Put(int id, [FromBody] CategoriaDTO categoriaDto)
         {
             try
             {
@@ -120,7 +121,7 @@ namespace APICatalogo.Controllers
                 var categoria = _mapper.Map<Categoria>(categoriaDto);
                
                 _uof.CategoriaRepository.Update(categoria); 
-                _uof.Commit();
+                await _uof.Commit();
                 return Ok($"Categoria com id={id} foi atualizada com sucesso");
             }
             catch (Exception)
@@ -133,18 +134,18 @@ namespace APICatalogo.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<CategoriaDTO> Delete(int id)
+        public async Task<ActionResult<CategoriaDTO>> Delete(int id)
         {
             try
             {
-                var categoria = _uof.CategoriaRepository.GetById(p => p.CategoriaId == id);
+                var categoria = await _uof.CategoriaRepository.GetById(p => p.CategoriaId == id);
                 if (categoria == null)
                 {
                     return NotFound($"Categoria com id={id} não foi encontrada");
                 }
               
                 _uof.CategoriaRepository.Delete(categoria);
-                _uof.Commit();
+                await _uof.Commit();
 
                 var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
 
