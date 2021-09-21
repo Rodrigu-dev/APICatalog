@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 namespace APICatalogo.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [ApiVersion("1.0")]
     [Route("api/[Controller]")]
     [ApiController]
     public class ProdutosController : ControllerBase

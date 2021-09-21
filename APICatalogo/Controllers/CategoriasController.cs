@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [ApiVersion("1.0")]
     [Route("api/[Controller]")]
     [ApiController]
     [EnableCors("PermitirApiRequest")]
