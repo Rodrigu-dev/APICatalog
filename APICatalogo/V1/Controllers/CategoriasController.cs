@@ -15,10 +15,11 @@ using System.Threading.Tasks;
 namespace APICatalogo.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [Produces("application/json")]
     [ApiVersion("1.0")]
     [Route("api/[Controller]")]
     [ApiController]
-    [EnableCors("PermitirApiRequest")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class CategoriasController : ControllerBase
     {
         private readonly IUnitOfWork _uof;
@@ -41,8 +42,7 @@ namespace APICatalogo.Controllers
         public async Task<ActionResult<IEnumerable<CategoriaDTO>>> 
             Get([FromQuery] CategoriasParameters categoriasParameters)
         {
-            try
-            {
+           
                 var categoria = await _uof.CategoriaRepository.GetCategorias(categoriasParameters);
 
                 var metadata = new
@@ -59,20 +59,16 @@ namespace APICatalogo.Controllers
 
                 var categoriaDto = _mapper.Map<List<CategoriaDTO>>(categoria);
                 return categoriaDto;
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Erro ao tentar obter as categorias do banco de dados");
-            }
-
         }
 
+        /// <summary>
+        /// Obtem Categoria pelo Id
+        /// </summary>
+        /// <param name="id">Codigo da Categoria</param>
+        /// <returns> Objetos Categoria </returns>
         [HttpGet("{id}", Name = "ObterCategoria")]
         public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
-            try
-            {
                 var categoria = await _uof.CategoriaRepository.GetById(p => p.CategoriaId == id);
                 if (categoria == null)
                 {
@@ -82,19 +78,28 @@ namespace APICatalogo.Controllers
                 var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
                 
                 return categoriaDto;
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Erro ao tentar obter as categorias do banco de dados");
-            }
         }
 
+        /// <summary>
+        /// Incluir nova categoria
+        /// </summary>
+        /// <remarks>
+        /// Exemplo de request:
+        ///     
+        ///     Post api/categoria
+        ///     {
+        ///         "categoriaId": 1,
+        ///         "nome": "categoria1",
+        ///         "imagemUrl": "http://rbc.net/2.jpg"
+        ///     }
+        /// </remarks>
+        /// <param name="categoriaDto">objeto categoria</param>
+        /// <returns>O objeto Categoria Incluida</returns>
+        /// <remarks>Retorna um objeto Categoria Incluído</remarks>
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] CategoriaDTO categoriaDto)
         {
-            try
-            {
+            
                 var categoria = _mapper.Map<Categoria>(categoriaDto);
                 
                 _uof.CategoriaRepository.Add(categoria); // Adiciona na Memória 
@@ -102,21 +107,15 @@ namespace APICatalogo.Controllers
 
                 var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
 
-                return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoriaDTO);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Erro ao tentar criar uma nova Categoria");
-            }
-           
+                return new CreatedAtRouteResult("ObterCategoria", 
+                    new { id = categoria.CategoriaId }, categoriaDTO);
+                      
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] CategoriaDTO categoriaDto)
         {
-            try
-            {
+            
                 if (id != categoriaDto.CategoriaId) 
                 {
                     return BadRequest($"Não foi possivel atualizar a categoria com id={id} ");
@@ -127,21 +126,13 @@ namespace APICatalogo.Controllers
                 _uof.CategoriaRepository.Update(categoria); 
                 await _uof.Commit();
                 return Ok($"Categoria com id={id} foi atualizada com sucesso");
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   $"Erro ao tentar atualizar a Categoria com id={id}");
-            }
-            
-
+ 
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<CategoriaDTO>> Delete(int id)
         {
-            try
-            {
+           
                 var categoria = await _uof.CategoriaRepository.GetById(p => p.CategoriaId == id);
                 if (categoria == null)
                 {
@@ -154,15 +145,6 @@ namespace APICatalogo.Controllers
                 var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
 
                 return categoriaDto;
-            }
-            catch (Exception)
-            {
-
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    $"Erro ao tentar excluir a Categoria de id={id}");
-            }
-            
-
         }
 
     }

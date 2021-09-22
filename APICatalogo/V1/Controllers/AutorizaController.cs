@@ -12,9 +12,11 @@ using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
+    [Produces("application/json")]
     [ApiVersion("1.0")]
     [Route("api/[controller]")]
     [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class AutorizaController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
@@ -37,6 +39,11 @@ namespace APICatalogo.Controllers
                 + DateTime.Now.ToLongDateString();
         }
 
+        /// <summary>
+        /// Registra um novo usuário
+        /// </summary>
+        /// <param name="model">Um objeto usuarioDTO</param>
+        /// <returns>Status 200 e o token para o cliente</returns>
         [HttpPost("register")]
         public async Task<ActionResult> RegisterUser([FromBody] UsuarioDTO model)
         {
@@ -59,6 +66,12 @@ namespace APICatalogo.Controllers
             return Ok(GeraToken(model));
         }
 
+        /// <summary>
+        /// Verifica as credenciais do usuário
+        /// </summary>
+        /// <param name="userInfo">Um objeto do tipo usuarioDTO</param>
+        /// <returns>Status 200 e o token para o cliente</returns>
+        /// <remarks>retorna o status 200 e o token para o novo</remarks>
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] UsuarioDTO userInfo)
         {

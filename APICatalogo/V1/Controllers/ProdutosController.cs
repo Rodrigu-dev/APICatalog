@@ -14,9 +14,11 @@ using System.Threading.Tasks;
 namespace APICatalogo.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [Produces("application/json")]
     [ApiVersion("1.0")]
     [Route("api/[Controller]")]
     [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class ProdutosController : ControllerBase
     {
         private readonly IUnitOfWork _uof;
@@ -36,12 +38,15 @@ namespace APICatalogo.Controllers
             
         }
 
+        /// <summary>
+        /// Exibe uma relação dos produtos
+        /// </summary>
+        /// <param name="produtosParameters"></param>
+        /// <returns>Retorna uma lista de objetos Produtos</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> 
             Get([FromQuery] ProdutosParameters produtosParameters)
         {
-            try
-            {
                 var produtos = await _uof.ProdutoRepository.GetProdutos(produtosParameters);
 
                 var metadata = new
@@ -59,20 +64,17 @@ namespace APICatalogo.Controllers
 
                 var produtosDto = _mapper.Map<List<ProdutoDTO>>(produtos);
                 return produtosDto;
-            }
-            catch (System.Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Erro ao tentar obter as Produtos do banco de dados");
-            }
-            
+                       
         }
 
+        /// <summary>
+        /// Obtem o Produto pelo seu identificador Id
+        /// </summary>
+        /// <param name="id">Código do produto</param>
+        /// <returns>Um objeto Produto</returns>
         [HttpGet("{id}", Name = "ObterProduto")]
         public async Task<ActionResult<ProdutoDTO>> Get(int id)
         {
-            try
-            {
                 var produto = await _uof.ProdutoRepository.GetById(p => p.ProdutoId == id);
                 if (produto == null)
                 {
@@ -81,20 +83,12 @@ namespace APICatalogo.Controllers
                 
                 var produtoDto = _mapper.Map<ProdutoDTO>(produto);
                 return produtoDto;
-            }
-            catch (System.Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Erro ao tentar obter os Produtos do banco de dados");
-            }
-           
+                      
         }
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] ProdutoDTO produtoDto)
         {
-            try
-            {
                 var produto = _mapper.Map<Produto>(produtoDto);
 
                 _uof.ProdutoRepository.Add(produto); // Adiciona na Memória 
@@ -103,22 +97,12 @@ namespace APICatalogo.Controllers
                 var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
 
                 return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produtoDTO);
-            }
-            catch (System.Exception)
-            {
-
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Erro ao tentar criar um novo Produto");
-            }
-           
+                       
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id,[FromBody] ProdutoDTO produtoDto)
         {
-            try
-            {
-                
                 if (id != produtoDto.ProdutoId) 
                 {
                     return BadRequest($"Não foi possivel atualizar o Produto com id={id} ");
@@ -129,21 +113,12 @@ namespace APICatalogo.Controllers
                 _uof.ProdutoRepository.Update(produto);
                 await _uof.Commit();
                 return Ok($"Produto com id={id} foi atualizada com sucesso");
-            }
-            catch (System.Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    $"Erro ao tentar atualizar o Produto com id={id}");
-            }
            
-
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<ProdutoDTO>> Delete(int id)
         {
-            try
-            {
                 var produto = await _uof.ProdutoRepository.GetById(p => p.ProdutoId == id);
                 if (produto == null)
                 {
@@ -156,15 +131,7 @@ namespace APICatalogo.Controllers
                 var produtoDto = _mapper.Map<ProdutoDTO>(produto);
 
                 return produtoDto;
-            }
-            catch (System.Exception)
-            {
-
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    $"Erro ao tentar Excluir o Produto com id={id}");
-            }
            
-
         }
 
 

@@ -1,4 +1,5 @@
 using APICatalogo.Context;
+using APICatalogo.Extensions;
 using APICatalogo.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -28,21 +29,13 @@ namespace APICatalogo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy("PermitirApiRequest",
-                    builder =>
-                    builder.WithOrigins("http://www.apirequest.io")
-                            .WithMethods("GET")
-                        );
-            });
-
+            
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<IUnitOfWork,UnitOfWork>();
             string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
 
-             services.AddDbContextPool<AppDbContext>(options =>
+            services.AddDbContextPool<AppDbContext>(options =>
                   options.UseMySql(mySqlConnectionStr,
                   ServerVersion.AutoDetect(mySqlConnectionStr)));
             
@@ -51,9 +44,6 @@ namespace APICatalogo
                     .AddEntityFrameworkStores<AppDbContext>()
                     .AddDefaultTokenProviders();
 
-            //JWT
-            //Adiciona o manipulador de autenticacao e define o esquema de autenticacao usado: Bearer
-            //Valida o emissor, a audiencia e a chave usando a chave secreta valida a assinatura
             services.AddAuthentication(
                 JwtBearerDefaults.AuthenticationScheme).
                 AddJwtBearer(Options =>
@@ -77,7 +67,9 @@ namespace APICatalogo
                 options.ReportApiVersions = true;
                 options.ApiVersionReader = new HeaderApiVersionReader("api-version");
             });
-            
+
+            services.AddSettingsSwagger();
+
             services.AddControllers()
                     .AddNewtonsoftJson(options =>
                     {
@@ -102,12 +94,15 @@ namespace APICatalogo
             app.UseAuthentication();
 
             app.UseAuthorization();
+ 
+            app.UseSwagger();
 
-            //app.UseCors(opt => opt
-            //    .WithOrigins("https://www.apirequest.io/")
-            //    .WithMethods("GET"));
-            app.UseCors();
-
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json",
+                    "APICatalogo");
+            });
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
