@@ -1,6 +1,7 @@
 using APICatalogo.Context;
 using APICatalogo.Extensions;
 using APICatalogo.Repository;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Reflection;
 using System.Text;
 
 namespace APICatalogo
@@ -69,6 +71,10 @@ namespace APICatalogo
             });
 
             services.AddSettingsSwagger();
+
+            services.AddControllers()
+                .AddFluentValidation(x => x
+                .RegisterValidatorsFromAssemblyContaining<Startup>());
 
             services.AddControllers()
                     .AddNewtonsoftJson(options =>

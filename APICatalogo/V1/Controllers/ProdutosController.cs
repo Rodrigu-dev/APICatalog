@@ -86,6 +86,24 @@ namespace APICatalogo.Controllers
                       
         }
 
+        /// <summary>
+        /// Criar novo Produto
+        /// </summary>
+        /// <remarks>
+        /// Exemplo de request:
+        ///     
+        ///     Post api/produtos
+        ///     {
+        ///         "Nome": "string",
+        ///         "Descricao": "string",
+        ///         "Preco": "numerico",
+        ///         "imagemUrl": "string",
+        ///         "CategoriaId": "numerico"
+        ///     }
+        /// </remarks>
+        /// <param name="produtoDto"></param>
+        /// <returns>O objeto Produto Incluido</returns>
+        /// <remarks>Retorna um objeto Produto Incluído</remarks>
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] ProdutoDTO produtoDto)
         {

@@ -4,8 +4,6 @@ using APICatalogo.Pagination;
 using APICatalogo.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -67,32 +65,31 @@ namespace APICatalogo.Controllers
         /// <param name="id">Codigo da Categoria</param>
         /// <returns> Objetos Categoria </returns>
         [HttpGet("{id}", Name = "ObterCategoria")]
-        public async Task<ActionResult<CategoriaDTO>> Get(int id)
+        public async Task<ActionResult<CategoriaDTO>> Get(int? id)
         {
+            try
+            {
                 var categoria = await _uof.CategoriaRepository.GetById(p => p.CategoriaId == id);
                 if (categoria == null)
                 {
                     return NotFound($"A categoria com id={id} não foi encontrada");
+                    //throw new Exception();
                 }
-               
+
                 var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
-                
                 return categoriaDto;
+
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+                
         }
 
         /// <summary>
         /// Incluir nova categoria
         /// </summary>
-        /// <remarks>
-        /// Exemplo de request:
-        ///     
-        ///     Post api/categoria
-        ///     {
-        ///         "categoriaId": 1,
-        ///         "nome": "categoria1",
-        ///         "imagemUrl": "http://rbc.net/2.jpg"
-        ///     }
-        /// </remarks>
         /// <param name="categoriaDto">objeto categoria</param>
         /// <returns>O objeto Categoria Incluida</returns>
         /// <remarks>Retorna um objeto Categoria Incluído</remarks>
