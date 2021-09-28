@@ -26,5 +26,7 @@ namespace APICatalogo.Repository
         {
             return await Get().OrderBy(c => c.Preco).ToListAsync();
         }
+
+       
     }
 }

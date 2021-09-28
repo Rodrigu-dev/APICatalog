@@ -14,8 +14,8 @@ namespace APICatalogo.DTOs.Validators
                .NotEmpty().WithMessage("Campo Obrigatório")
                .EmailAddress().WithMessage("E-mail é Inválido");
             RuleFor(x => x.Password)
-               .NotNull()
-               .Length(8).WithMessage("Informe a senha");
+               .NotEmpty().WithMessage("Campo Obrigatório")
+               .Length(8).WithMessage("Deve conter 8 caracteres");
             RuleFor(x => x.ConfirmPassword)
                .Matches("").WithMessage("Senha é inválida");
         }

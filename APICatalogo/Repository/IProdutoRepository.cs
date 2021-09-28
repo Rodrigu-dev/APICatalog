@@ -10,5 +10,6 @@ namespace APICatalogo.Repository
         Task<PagedList<Produto>> GetProdutos(ProdutosParameters produtosParameters);
         Task<IEnumerable<Produto>> GetProdutosPorPreco();
 
+       
     }
 }

@@ -19,6 +19,12 @@
             <returns>Status 200 e o token para o cliente</returns>
             <remarks>retorna o status 200 e o token para o novo</remarks>
         </member>
+        <member name="M:APICatalogo.Controllers.CategoriasController.Get">
+            <summary>
+            Retorna uma coleção de objetos Categoria
+            </summary>
+            <returns>Lista de Categorias</returns>
+        </member>
         <member name="M:APICatalogo.Controllers.CategoriasController.Get(System.Nullable{System.Int32})">
             <summary>
             Obtem Categoria pelo Id
@@ -30,26 +36,16 @@
             <summary>
             Incluir nova categoria
             </summary>
-            <remarks>
-            Exemplo de request:
-                
-                Post api/categoria
-                {
-                    "categoriaId": 1,
-                    "nome": "categoria1",
-                    "imagemUrl": "http://rbc.net/2.jpg"
-                }
-            </remarks>
             <param name="categoriaDto">objeto categoria</param>
             <returns>O objeto Categoria Incluida</returns>
             <remarks>Retorna um objeto Categoria Incluído</remarks>
         </member>
-        <member name="M:APICatalogo.Controllers.ProdutosController.Get(APICatalogo.Pagination.ProdutosParameters)">
+        <member name="M:APICatalogo.Controllers.ProdutosController.GetPaginacao(APICatalogo.Pagination.ProdutosParameters)">
             <summary>
-            Exibe uma relação dos produtos
+            Exibe uma relação dos produtos por pagina
             </summary>
             <param name="produtosParameters"></param>
-            <returns>Retorna uma lista de objetos Produtos</returns>
+            <returns>Retorna uma lista de objetos Produtos por pagina</returns>
         </member>
         <member name="M:APICatalogo.Controllers.ProdutosController.Get(System.Int32)">
             <summary>

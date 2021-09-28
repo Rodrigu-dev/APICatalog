@@ -13,7 +13,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.OData.Extensions;
 using System;
+
 using System.Reflection;
 using System.Text;
 
@@ -61,6 +63,8 @@ namespace APICatalogo
                         Encoding.UTF8.GetBytes(Configuration["Jwt:key"]))
 
                 });
+
+            //services.AddOData();
 
             services.AddApiVersioning(options =>
             {
@@ -113,6 +117,11 @@ namespace APICatalogo
             {
                 endpoints.MapControllers();
             });
+            //app.UseMvc(options =>
+            //{
+            //    options.EnableDependencyInjection();
+            //    options.Ex
+            //});
         }
     }
 }

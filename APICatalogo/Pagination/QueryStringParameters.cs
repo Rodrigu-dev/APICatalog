@@ -8,8 +8,20 @@ namespace APICatalogo.Pagination
     public class QueryStringParameters
     {
         const int maxPageSize = 50;
+        const int maxPageNumber = 20;
         private int _pageSize = 10;
-        public int PageNumber { get; set; } = 1;
+        private int _pageNumber = 1;
+        
+        public int PageNumber {
+            get
+            {
+                return _pageNumber;
+            }
+            set 
+            {
+                _pageNumber = (value > maxPageNumber) ? maxPageNumber : value;
+            } 
+        }
         public int PageSize
         {
             get

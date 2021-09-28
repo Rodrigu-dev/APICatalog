@@ -33,5 +33,7 @@ namespace APICatalogo.Pagination
 
             return new PagedList<T>(items, count, pageNumber, pageSize);
         }
+
+        
     }
 }
