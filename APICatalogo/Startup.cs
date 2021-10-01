@@ -2,6 +2,7 @@ using APICatalogo.Context;
 using APICatalogo.Extensions;
 using APICatalogo.Repository;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.OData.Extensions;
 using System;
 
 using System.Reflection;
@@ -64,7 +64,7 @@ namespace APICatalogo
 
                 });
 
-            //services.AddOData();
+            
 
             services.AddApiVersioning(options =>
             {
@@ -86,6 +86,8 @@ namespace APICatalogo
                     options.SerializerSettings.ReferenceLoopHandling
                         = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                      });
+
+            services.AddOData();
 
         }
 
@@ -115,13 +117,13 @@ namespace APICatalogo
             
             app.UseEndpoints(endpoints =>
             {
+                endpoints.EnableDependencyInjection();
+                endpoints.Expand().Select().Count().OrderBy().Filter();
+
                 endpoints.MapControllers();
             });
-            //app.UseMvc(options =>
-            //{
-            //    options.EnableDependencyInjection();
-            //    options.Ex
-            //});
+
+            
         }
     }
 }

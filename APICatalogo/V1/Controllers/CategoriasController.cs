@@ -5,6 +5,7 @@ using APICatalogo.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNet.OData;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,8 @@ using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer")]
+   // [Authorize(AuthenticationSchemes = "Bearer")]
+    [EnableQuery]
     [Produces("application/json")]
     [ApiVersion("1.0")]
     [Route("api/[Controller]")]
@@ -29,32 +31,32 @@ namespace APICatalogo.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("produtos")]
-        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriasProdutos()
-        {
-            var categorias = await _uofContext.CategoriaRepository.GetCategoriaProdutos();
-            var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
-            return categoriasDto;
-        }
-
         /// <summary>
         /// Retorna uma coleção de objetos Categoria
         /// </summary>
         /// <returns>Lista de Categorias</returns>
         [HttpGet]
-        public ActionResult<IEnumerable<CategoriaDTO>> Get()
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAllAsync()
         {
-            var categorias = _uofContext.CategoriaRepository.Get().ToList();
+            var categorias = await _uofContext.CategoriaRepository.GetAllCategory();
+            var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
+            return categoriasDto;
+        }
+
+        [HttpGet("produtos")]
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoryProducts()
+        {
+            var categorias = await _uofContext.CategoriaRepository.GetCategoryProducts();
             var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
             return categoriasDto;
         }
 
         [HttpGet("paginacao")]
-        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> 
-            GetPaginacao([FromQuery] CategoriasParameters categoriasParameters)
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>>
+            GetPagination([FromQuery] CategoriasParameters categoriasParameters)
         {
            
-                var categoria = await _uofContext.CategoriaRepository.GetCategorias(categoriasParameters);
+                var categoria = await _uofContext.CategoriaRepository.GetCategory(categoriasParameters);
 
                 Response.Headers.Add("X-Total-Registros", JsonConvert.SerializeObject(categoria.TotalCount));
                 Response.Headers.Add("X-Numero-Paginas", JsonConvert.SerializeObject(categoria.TotalPages));
@@ -69,7 +71,7 @@ namespace APICatalogo.Controllers
         /// <param name="id">Codigo da Categoria</param>
         /// <returns> Objetos Categoria </returns>
         [HttpGet("{id}", Name = "ObterCategoria")]
-        public async Task<ActionResult<CategoriaDTO>> Get(int? id)
+        public async Task<ActionResult<CategoriaDTO>> GetById(int? id)
         {
             try
             {

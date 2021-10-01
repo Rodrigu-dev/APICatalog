@@ -7,9 +7,10 @@ namespace APICatalogo.Repository
 {
     public interface IProdutoRepository : IRepository<Produto>
     {
-        Task<PagedList<Produto>> GetProdutos(ProdutosParameters produtosParameters);
-        Task<IEnumerable<Produto>> GetProdutosPorPreco();
+        Task<PagedList<Produto>> GetProductsPagination(ProdutosParameters produtosParameters);
+        Task<IEnumerable<Produto>> GetProductsByPrice();
+        Task<IEnumerable<Produto>> GetAllProducts();
 
-       
+
     }
 }

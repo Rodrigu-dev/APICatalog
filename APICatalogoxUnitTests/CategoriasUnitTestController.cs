@@ -55,7 +55,7 @@ namespace APICatalogoxUnitTests
             var catId = 2;
 
             //Act  
-            var data = await controller.Get(catId);
+            var data = await controller.GetById(catId);
             Console.WriteLine(data);
 
             //Assert  
@@ -70,7 +70,7 @@ namespace APICatalogoxUnitTests
             int? catId = null;
 
             //Act  
-            var data = await controller.Get(catId);
+            var data = await controller.GetById(catId);
 
             //Assert  
             Assert.IsType<BadRequestResult>(data.Result);

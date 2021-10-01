@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNet.OData;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,8 @@ using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer")]
+  //  [Authorize(AuthenticationSchemes = "Bearer")]
+    [EnableQuery]
     [Produces("application/json")]
     [ApiVersion("1.0")]
     [Route("api/[Controller]")]
@@ -29,10 +31,19 @@ namespace APICatalogo.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("menorpreco")]
-        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosPrecos()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetAllAsync()
         {
-            var produtos = await _uofContext.ProdutoRepository.GetProdutosPorPreco();
+            var produtos = await _uofContext.ProdutoRepository.GetAllProducts();
+
+            var produtosDto = _mapper.Map<List<ProdutoDTO>>(produtos);
+            return produtosDto;
+        }
+
+        [HttpGet("menorpreco")]
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProductsPrice()
+        {
+            var produtos = await _uofContext.ProdutoRepository.GetProductsByPrice();
             var produtosDto = _mapper.Map<List<ProdutoDTO>>(produtos);
             return produtosDto;
             
@@ -45,9 +56,9 @@ namespace APICatalogo.Controllers
         /// <returns>Retorna uma lista de objetos Produtos por pagina</returns>
         [HttpGet("paginacao")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> 
-            GetPaginacao([FromQuery] ProdutosParameters produtosParameters)
+            GetPagination([FromQuery] ProdutosParameters produtosParameters)
         {
-                var produtos = await _uofContext.ProdutoRepository.GetProdutos(produtosParameters);
+                var produtos = await _uofContext.ProdutoRepository.GetProductsPagination(produtosParameters);
 
                 Response.Headers.Add("X-Total-Registros", JsonConvert.SerializeObject(produtos.TotalCount));
                 Response.Headers.Add("X-Numero-Paginas", JsonConvert.SerializeObject(produtos.TotalPages));
@@ -63,7 +74,7 @@ namespace APICatalogo.Controllers
         /// <param name="id">Código do produto</param>
         /// <returns>Um objeto Produto</returns>
         [HttpGet("{id}", Name = "ObterProduto")]
-        public async Task<ActionResult<ProdutoDTO>> Get(int id)
+        public async Task<ActionResult<ProdutoDTO>> GetById(int id)
         {
                 var produto = await _uofContext.ProdutoRepository.GetById(p => p.ProdutoId == id);
                 if (produto == null)
@@ -76,24 +87,6 @@ namespace APICatalogo.Controllers
                       
         }
 
-        /// <summary>
-        /// Criar novo Produto
-        /// </summary>
-        /// <remarks>
-        /// Exemplo de request:
-        ///     
-        ///     Post api/produtos
-        ///     {
-        ///         "Nome": "string",
-        ///         "Descricao": "string",
-        ///         "Preco": "numerico",
-        ///         "imagemUrl": "string",
-        ///         "CategoriaId": "numerico"
-        ///     }
-        /// </remarks>
-        /// <param name="produtoDto"></param>
-        /// <returns>O objeto Produto Incluido</returns>
-        /// <remarks>Retorna um objeto Produto Incluído</remarks>
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] ProdutoDTO produtoDto)
         {

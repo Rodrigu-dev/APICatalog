@@ -15,17 +15,22 @@ namespace APICatalogo.Repository
 
         }
 
-        public async Task<PagedList<Categoria>> GetCategorias(CategoriasParameters categoriasParameters)
+        public async Task<PagedList<Categoria>> GetCategory(CategoriasParameters categoriasParameters)
         {
             return await PagedList<Categoria>.ToPagedList(Get()
                                     .OrderBy(on => on.CategoriaId),
                                      categoriasParameters.PageNumber, categoriasParameters.PageSize);
         }
-        public async Task<IEnumerable<Categoria>> GetCategoriaProdutos()
+        public async Task<IEnumerable<Categoria>> GetCategoryProducts()
         {
             return await Get().Include(x => x.Produtos).ToListAsync();
         }
 
-        
+        public async Task<IEnumerable<Categoria>> GetAllCategory()
+        {
+            return await Get().ToListAsync();
+        }
+
+
     }
 }

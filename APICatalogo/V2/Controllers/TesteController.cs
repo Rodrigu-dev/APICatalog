@@ -26,15 +26,10 @@ namespace APICatalogo.Controllers
         [HttpGet("produtos2")]
         public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriasProdutos()
         {
-            var cat = await _uof.CategoriaRepository.GetCategoriaProdutos();
+            var cat = await _uof.CategoriaRepository.GetCategoryProducts();
             var catDto = _mapper.Map<List<CategoriaDTO>>(cat);
             return catDto;
         }
-
-       
-            
-
-        
 
     }
 }
